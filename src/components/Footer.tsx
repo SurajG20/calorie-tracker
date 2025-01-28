@@ -1,3 +1,5 @@
+import { Github, Linkedin } from 'lucide-react';
+
 export default function Footer() {
   return (
     <footer className="border-border border-t">
@@ -7,16 +9,15 @@ export default function Footer() {
             <h2 className="text-lg font-bold text-rose-500">AI Calorie Tracker</h2>
             <span className="text-muted-foreground text-sm">© 2025</span>
           </div>
-          <nav className="text-muted-foreground flex gap-6 text-sm">
-            <a href="#" className="hover:text-foreground">
-              Privacy
-            </a>
-            <a href="#" className="hover:text-foreground">
-              Terms
-            </a>
-            <a href="#" className="hover:text-foreground">
-              Contact
-            </a>
+          <nav className="flex items-center gap-x-8">
+            <div className="flex items-center gap-2">
+              <Github className="h-4 w-4" />
+              <span className="text-muted-foreground text-sm">GitHub</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Linkedin className="h-4 w-4" />
+              <span className="text-muted-foreground text-sm">LinkedIn</span>
+            </div>
           </nav>
         </div>
       </div>

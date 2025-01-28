@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
 
 const cardContent = [
   {
@@ -29,9 +30,11 @@ export default function HomePage() {
             Log meals in natural language, track calories effortlessly, and achieve your health goals with personalized
             AI-powered insights.
           </p>
-          <Button size="lg" className="bg-rose-500 px-8 py-6 text-lg text-white">
-            Get Started Free
-          </Button>
+          <Link href="/sign-in">
+            <Button size="lg" className="bg-rose-500 px-8 py-6 text-lg text-white">
+              Get Started Free
+            </Button>
+          </Link>
         </section>
 
         <section className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
