@@ -4,23 +4,32 @@ import './globals.css';
 
 const manrope = Manrope({ subsets: ['latin'] });
 
-
 export const metadata: Metadata = {
   title: {
-    default: "AI Calorie Tracker",
-    template: "%s | AI Calorie Tracker",
+    default: 'AI Calorie Tracker',
+    template: '%s | AI Calorie Tracker',
   },
-  description: "Track your calories and nutrition with AI-powered food recognition",
+  description: 'Track your calories and nutrition with AI-powered food recognition',
   openGraph: {
-    title: "AI Calorie Tracker",
-    description: "Track your calories and nutrition with AI-powered food recognition",
-    type: "website",
+    title: 'AI Calorie Tracker',
+    description: 'Track your calories and nutrition with AI-powered food recognition',
+    type: 'website',
+    siteName: 'AI Calorie Tracker',
+    locale: 'en_US',
   },
   robots: {
     index: true,
     follow: true,
-  }
-}
+  },
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: '#020817' },
+  ],
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+  },
+};
 
 export default function RootLayout({
   children,
@@ -28,10 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${manrope.className} bg-background text-foreground antialiased min-h-screen `}>
-        {children}
-      </body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={manrope.className}>{children}</body>
     </html>
   );
 }

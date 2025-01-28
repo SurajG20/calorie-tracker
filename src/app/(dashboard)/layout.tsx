@@ -1,10 +1,11 @@
-import Header from "@/components/Header";
-
-export default function Layout({children}: {children: React.ReactNode}) {
-    return (
-        <section className="min-h-screen p-8 flex flex-col max-w-7xl mx-auto ">
-            <Header />
-            {children}
-        </section>
-    );
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="mx-auto flex min-h-screen flex-col">
+      <Header />
+      {children}
+      <Footer />
+    </section>
+  );
 }
