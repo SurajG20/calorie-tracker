@@ -8,6 +8,6 @@ if (!process.env.DATABASE_URL) {
 }
 
 const client = await mysql.createConnection(process.env.DATABASE_URL);
-const db = drizzle(client, { schema });
+const db = drizzle(client, { schema, mode: 'default' });
 
 export { client, db };
