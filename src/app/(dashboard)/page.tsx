@@ -31,7 +31,7 @@ export default function HomePage() {
             AI-powered insights.
           </p>
           <Link href="/sign-in">
-            <Button size="lg" className="bg-rose-500 px-8 py-6 text-lg text-white">
+            <Button size="lg" className="bg-blue-600 px-8 py-6 text-lg text-white hover:bg-blue-700">
               Get Started Free
             </Button>
           </Link>
@@ -61,8 +61,8 @@ export default function HomePage() {
             ].map((step, i) => (
               <Card key={i} className="flex flex-col items-center p-4 text-center">
                 <div
-                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 font-bold
-                    text-rose-500"
+                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 font-bold
+                    text-blue-600"
                 >
                   {i + 1}
                 </div>

@@ -15,7 +15,7 @@ export default function Page() {
   const handleSignIn = async () => {
     try {
       setIsLoading(true);
-      await authClient.signIn.email(
+   await authClient.signIn.email(
         { email, password },
         {
           onRequest: () => setIsLoading(true),
