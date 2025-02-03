@@ -85,7 +85,7 @@ export default function SignIn() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-2">
-          <CardTitle className="text-3xl font-bold text-center">Welcome back</CardTitle>
+          <CardTitle className="text-3xl font-bold text-center text-blue-600">Welcome back</CardTitle>
           <p className="text-center text-muted-foreground">Enter your credentials to access your account</p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -107,7 +107,7 @@ export default function SignIn() {
                           placeholder={`Enter your ${field}`}
                           {...fieldProps}
                           autoComplete={field === 'password' ? 'current-password' : 'email'}
-                          className="h-10"
+                          className="h-10 focus:ring-blue-600 focus:border-blue-600"
                         />
                       </FormControl>
                       <FormMessage className="text-sm" />
@@ -128,18 +128,18 @@ export default function SignIn() {
             </div>
           </div>
 
-          <LoadingButton pending={pendingGithub} onClick={handleSignInWithGithub}>
+          <LoadingButton pending={pendingGithub} onClick={handleSignInWithGithub} variant="outline">
             <GithubIcon className="w-4 h-4 mr-2" />
             GitHub
           </LoadingButton>
 
           <div className="text-center space-y-2">
-            <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+            <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 hover:underline">
               Forgot your password?
             </Link>
             <div className="text-sm text-muted-foreground">
               Don't have an account?{' '}
-              <Link href="/sign-up" className="text-primary hover:underline">
+              <Link href="/sign-up" className="text-blue-600 hover:text-blue-700 hover:underline">
                 Sign up
               </Link>
             </div>

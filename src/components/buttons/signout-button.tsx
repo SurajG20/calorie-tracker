@@ -2,8 +2,9 @@
 
 import { authClient } from '@/auth-client';
 import LoadingButton from '@/components/buttons/loading-button';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 export default function SignoutButton() {
   const [pending, setPending] = useState(false);
   const router = useRouter();

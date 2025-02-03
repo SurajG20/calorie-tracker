@@ -62,7 +62,7 @@ export default function SignUp() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-2">
-          <CardTitle className="text-3xl font-bold text-center">Create Account</CardTitle>
+          <CardTitle className="text-3xl font-bold text-center text-blue-600">Create Account</CardTitle>
           <p className="text-center text-muted-foreground">Enter your details to get started</p>
         </CardHeader>
         <CardContent>
@@ -83,11 +83,11 @@ export default function SignUp() {
                       <FormLabel>{label}</FormLabel>
                       <FormControl>
                         <Input
-                          type={name.includes('password') ? 'password'  : name === 'email' ? 'email' : 'text'}
+                          type={name.includes('password') ? 'password' : name === 'email' ? 'email' : 'text'}
                           placeholder={`Enter your ${name.toLowerCase()}`}
                           {...field}
                           autoComplete={name === 'password' ? 'new-password' : name === 'email' ? 'email' : 'off'}
-                          className="bg-white"
+                          className="bg-white focus:ring-blue-600 focus:border-blue-600"
                         />
                       </FormControl>
                       <FormMessage />
@@ -100,7 +100,7 @@ export default function SignUp() {
           </Form>
           <div className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{' '}
-            <Link href="/sign-in" className="font-medium text-primary hover:underline">
+            <Link href="/sign-in" className="font-medium text-blue-600 hover:text-blue-700 hover:underline">
               Sign in
             </Link>
           </div>
