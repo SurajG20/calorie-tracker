@@ -1,92 +1,111 @@
-"use client"
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
-import Link from "next/link";
+'use client';
 
-export default function Page() {
+import { authClient } from '@/auth-client';
+import LoadingButton from '@/components/buttons/loading-button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { signUpSchema } from '@/lib/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+export default function SignUp() {
+  const [pending, setPending] = useState(false);
+  const { toast } = useToast();
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const form = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
 
-  const handleSignUp = async () => {
-    try {
-      setIsLoading(true);
-      await authClient.signUp.email(
-        {
-          email,
-          password,
-          name,
+  const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
+    await authClient.signUp.email(
+      {
+        email: values.email,
+        password: values.password,
+        name: values.name,
+      },
+      {
+        onRequest: () => {
+          setPending(true);
         },
-        {
-          onRequest: () => setIsLoading(true),
-          onSuccess: () => {
-            router.push("/dashboard");
-            router.refresh();
-          },
-          onError: (ctx) => {
-            alert(ctx.error.message);
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Sign up error:", error);
-      alert("Failed to sign up. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+        onSuccess: () => {
+          toast({
+            title: 'Account created',
+            description: 'Your account has been created.',
+          });
+          router.push('/dashboard');
+          router.refresh();
+        },
+        onError: (ctx) => {
+          toast({
+            title: 'Error',
+            description: ctx.error.message ?? 'Something went wrong.',
+            variant: 'destructive',
+          });
+        },
+      },
+    );
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Create an Account</h1>
-          <p className="text-muted-foreground mt-2">Sign up to get started</p>
-        </div>
-
-        <div className="space-y-4">
-          <Input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={isLoading}
-          />
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLoading}
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={isLoading}
-          />
-          <Button 
-            className="w-full" 
-            onClick={handleSignUp}
-            disabled={isLoading}
-          >
-            {isLoading ? "Creating account..." : "Sign Up"}
-          </Button>
-        </div>
-
-        <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <Link href="/sign-in" className="text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-2">
+          <CardTitle className="text-3xl font-bold text-center">Create Account</CardTitle>
+          <p className="text-center text-muted-foreground">Enter your details to get started</p>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {[
+                { name: 'name', label: 'Full Name' },
+                { name: 'email', label: 'Email Address' },
+                { name: 'password', label: 'Password' },
+                { name: 'confirmPassword', label: 'Confirm Password' },
+              ].map(({ name, label }) => (
+                <FormField
+                  control={form.control}
+                  key={name}
+                  name={name as keyof z.infer<typeof signUpSchema>}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{label}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type={name.includes('password') ? 'password'  : name === 'email' ? 'email' : 'text'}
+                          placeholder={`Enter your ${name.toLowerCase()}`}
+                          {...field}
+                          autoComplete={name === 'password' ? 'new-password' : name === 'email' ? 'email' : 'off'}
+                          className="bg-white"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+              <LoadingButton pending={pending}>Create Account</LoadingButton>
+            </form>
+          </Form>
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+            Already have an account?{' '}
+            <Link href="/sign-in" className="font-medium text-primary hover:underline">
+              Sign in
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

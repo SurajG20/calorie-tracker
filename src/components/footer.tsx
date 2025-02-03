@@ -10,10 +10,10 @@ export default function Footer() {
             <span className="text-muted-foreground text-sm">© {new Date().getFullYear()} Neutrino</span>
           </div>
           <nav className="flex items-center gap-4">
-            <Link 
-              href="https://github.com" 
+            <Link
+              href="https://github.com"
               target="_blank"
-              rel="noopener noreferrer" 
+              rel="noopener noreferrer"
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <Github className="h-4 w-4" />
@@ -21,7 +21,7 @@ export default function Footer() {
             </Link>
             <Link
               href="https://linkedin.com"
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >

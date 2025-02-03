@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus } from "lucide-react"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Plus } from 'lucide-react';
 
 export function MealsTimeline() {
   return (
@@ -12,7 +12,12 @@ export function MealsTimeline() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
-        {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map((meal) => (
+        {[
+          'Breakfast',
+          'Lunch',
+          'Dinner',
+          'Snacks',
+        ].map((meal) => (
           <div key={meal} className="flex items-center justify-between p-4 rounded-lg border">
             <div>
               <h4 className="font-semibold">{meal}</h4>
@@ -28,5 +33,5 @@ export function MealsTimeline() {
         ))}
       </CardContent>
     </Card>
-  )
-} 
+  );
+}
