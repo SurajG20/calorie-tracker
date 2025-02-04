@@ -30,7 +30,7 @@ export default function HomePage() {
             Log meals in natural language, track calories effortlessly, and achieve your health goals with personalized
             AI-powered insights.
           </p>
-          <Link href="/sign-in">
+          <Link href="/get-started">
             <Button size="lg" className="bg-blue-600 px-8 py-6 text-lg text-white hover:bg-blue-700">
               Get Started Free
             </Button>
