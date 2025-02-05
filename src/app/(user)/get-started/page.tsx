@@ -1,9 +1,66 @@
-import { Button } from '@/components/ui/button';
+'use client';
+
+import LoadingButton from '@/components/buttons/loading-button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { userInfoSchema } from '@/lib/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 export default function Page() {
+  const { toast } = useToast();
+  const [pending, setPending] = useState(false);
+  const form = useForm<z.infer<typeof userInfoSchema>>({
+    resolver: zodResolver(userInfoSchema),
+    defaultValues: {
+      height: 0,
+      weight: 0,
+      age: 0,
+      gender: '',
+      goal: '',
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof userInfoSchema>) => {
+    setPending(true);
+    console.log(values);
+    try {
+      const response = await fetch('/api/user-info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+      console.log(response);
+
+      if (!response.ok) {
+        toast({
+          title: 'Something went wrong',
+          description: 'Your information has not been saved.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      toast({
+        title: 'Success',
+        description: 'Your information has been saved.',
+      });
+    } catch (error: unknown) {
+      toast({
+        title: 'Something went wrong',
+        description: error instanceof Error ? error.message : 'Something went wrong.',
+        variant: 'destructive',
+      });
+    } finally {
+      setPending(false);
+    }
+  };
+
   return (
     <div className="min-h-screen p-8">
       <div className="mx-auto max-w-md">
@@ -13,57 +70,117 @@ export default function Page() {
             Tell us about yourself so we can personalize your nutrition journey
           </p>
         </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+            <FormField
+              control={form.control}
+              name="height"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Height (cm)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter height"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      className="h-10 focus:ring-blue-600 focus:border-blue-600"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="weight"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Weight (kg)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter weight"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      className="h-10 focus:ring-blue-600 focus:border-blue-600"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="age"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Age</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter age"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      className="h-10 focus:ring-blue-600 focus:border-blue-600"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-sm" />
+                </FormItem>
+              )}
+            />
 
-        <form className="space-y-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="height">Height (cm)</Label>
-              <Input type="number" id="height" placeholder="Enter height" required />
-            </div>
+            <FormField
+              control={form.control}
+              key="gender"
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Gender</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-10 focus:ring-blue-600 focus:border-blue-600">
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-sm" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              key="goal"
+              name="goal"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Goal</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-10 focus:ring-blue-600 focus:border-blue-600">
+                        <SelectValue placeholder="Select goal" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="lose">Lose weight</SelectItem>
+                      <SelectItem value="gain">Gain weight</SelectItem>
+                      <SelectItem value="maintain">Maintain weight</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-sm" />
+                </FormItem>
+              )}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="weight">Weight (kg)</Label>
-              <Input type="number" id="weight" placeholder="Enter weight" required />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="age">Age</Label>
-              <Input type="number" id="age" placeholder="Enter age" required />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="gender">Gender</Label>
-              <Select required>
-                <SelectTrigger id="gender">
-                  <SelectValue placeholder="Select gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="goal">Goal</Label>
-              <Select required>
-                <SelectTrigger id="goal">
-                  <SelectValue placeholder="Select goal" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="lose">Lose Weight</SelectItem>
-                  <SelectItem value="gain">Gain Weight</SelectItem>
-                  <SelectItem value="maintain">Maintain Weight</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <Button type="submit" className="w-full bg-blue-600 px-8 py-6 text-lg text-white hover:bg-blue-700">
-            Continue
-          </Button>
-        </form>
+            <LoadingButton pending={pending} type="submit">
+              Continue
+            </LoadingButton>
+          </form>
+        </Form>
       </div>
     </div>
   );
