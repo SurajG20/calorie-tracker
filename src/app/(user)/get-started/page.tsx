@@ -27,7 +27,6 @@ export default function Page() {
 
   const onSubmit = async (values: z.infer<typeof userInfoSchema>) => {
     setPending(true);
-    console.log(values);
     try {
       const response = await fetch('/api/user-info', {
         method: 'POST',
@@ -36,7 +35,6 @@ export default function Page() {
         },
         body: JSON.stringify(values),
       });
-      console.log(response);
 
       if (!response.ok) {
         toast({
