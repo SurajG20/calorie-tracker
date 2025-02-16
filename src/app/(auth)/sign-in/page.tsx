@@ -41,7 +41,7 @@ export default function SignIn() {
           setPendingCredentials(true);
         },
         onSuccess: async () => {
-          router.push('/dashboard');
+          router.push('/get-started');
           router.refresh();
         },
         onError: (ctx: ErrorContext) => {
@@ -60,13 +60,13 @@ export default function SignIn() {
     await authClient.signIn.social(
       {
         provider: 'github',
+        callbackURL: '/get-started', 
       },
       {
         onRequest: () => {
           setPendingGithub(true);
         },
         onSuccess: async () => {
-          router.push('/dashboard');
           router.refresh();
         },
         onError: (ctx: ErrorContext) => {
@@ -134,11 +134,8 @@ export default function SignIn() {
           </LoadingButton>
 
           <div className="text-center space-y-2">
-            <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 hover:underline">
-              Forgot your password?
-            </Link>
             <div className="text-sm text-muted-foreground">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/sign-up" className="text-blue-600 hover:text-blue-700 hover:underline">
                 Sign up
               </Link>

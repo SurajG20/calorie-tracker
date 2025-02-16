@@ -14,16 +14,17 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String    @db.Text
+  id            String     @id
+  name          String     @db.Text
   email         String
   emailVerified Boolean
-  image         String?   @db.Text
+  image         String?    @db.Text
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
   userInfo      UserInfo[]
+
   @@unique([email])
   @@map("user")
 }
@@ -74,15 +75,16 @@ model Verification {
 }
 
 model UserInfo {
-  id String @id
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  height Int
-  weight Int
-  age Int
-  gender String
-  goal String
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  height    Int
+  weight    Int
+  age       Int
+  gender    String
+  goal      String
   createdAt DateTime
   updatedAt DateTime
+
   @@map("user_info")
 }

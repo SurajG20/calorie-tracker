@@ -19,14 +19,6 @@ ShadCN UI
 Drizzle ORM
 MySql
 
-<!--
-User Authentication: Secure email/password authentication powered by Supabase
-Profile Management: Personalized user profiles with customizable nutrition goals
-Food Tracking: Log meals with detailed nutritional information
-Real-time Analytics: Visual representation of nutrition data using charts
-Goal Setting: Set and monitor daily calorie and macronutrient targets
-Progress Monitoring: Track progress with animated circular progress indicators
- -->
 
 1. Onboarding :
    Ask user for their details and their goals.

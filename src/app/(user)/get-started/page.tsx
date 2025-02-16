@@ -7,13 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { userInfoSchema } from '@/lib/zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export default function Page() {
   const { toast } = useToast();
   const [pending, setPending] = useState(false);
+  const router = useRouter();
   const form = useForm<z.infer<typeof userInfoSchema>>({
     resolver: zodResolver(userInfoSchema),
     defaultValues: {
@@ -24,6 +26,26 @@ export default function Page() {
       goal: '',
     },
   });
+
+  useEffect(() => {
+    const checkUserInfo = async () => {
+      try {
+        const response = await fetch('/api/user-info');
+        console.log(`response`,response)
+        if (response.ok) {
+          const data = await response.json();
+          console.log(`data`,data)
+          if (data.hasUserInfo) {
+            router.push('/dashboard');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking user info:', error);
+      }
+    };
+
+    checkUserInfo();
+  }, [router]);
 
   const onSubmit = async (values: z.infer<typeof userInfoSchema>) => {
     setPending(true);
@@ -48,6 +70,8 @@ export default function Page() {
         title: 'Success',
         description: 'Your information has been saved.',
       });
+      router.push('/dashboard');
+      router.refresh();
     } catch (error: unknown) {
       toast({
         title: 'Something went wrong',

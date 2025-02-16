@@ -45,3 +45,8 @@ export const userInfoSchema = z.object({
 
   goal: z.string().min(1, 'Goal is required').max(50, 'Goal must be less than 50 characters'),
 });
+
+
+export const foodEntrySchema = z.object({
+  description: z.string().min(1, 'Please describe what you ate'),
+});

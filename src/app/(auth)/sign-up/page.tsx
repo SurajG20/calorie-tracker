@@ -29,6 +29,15 @@ export default function SignUp() {
   });
 
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
+    console.log(values);
+    if (values.password !== values.confirmPassword) {
+      toast({
+        title: 'Error',
+        description: 'Passwords do not match.',
+        variant: 'destructive',
+      });
+      return;
+    }
     await authClient.signUp.email(
       {
         email: values.email,
@@ -44,7 +53,7 @@ export default function SignUp() {
             title: 'Account created',
             description: 'Your account has been created.',
           });
-          router.push('/dashboard');
+          router.push('/get-started');
           router.refresh();
         },
         onError: (ctx) => {
@@ -83,14 +92,14 @@ export default function SignUp() {
                       <FormLabel>{label}</FormLabel>
                       <FormControl>
                         <Input
-                          type={name.includes('password') ? 'password' : name === 'email' ? 'email' : 'text'}
+                          type={name==="password" || name ==="confirmPassword" ? 'password' : name === 'email' ? 'email' : 'text'}
                           placeholder={`Enter your ${name.toLowerCase()}`}
                           {...field}
                           autoComplete={name === 'password' ? 'new-password' : name === 'email' ? 'email' : 'off'}
-                          className="bg-white focus:ring-blue-600 focus:border-blue-600"
-                        />
-                      </FormControl>
-                      <FormMessage />
+                            className="bg-white focus:ring-blue-600 focus:border-blue-600"
+                          />
+                        </FormControl>
+                        <FormMessage />
                     </FormItem>
                   )}
                 />
