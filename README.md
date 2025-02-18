@@ -19,7 +19,6 @@ ShadCN UI
 Drizzle ORM
 MySql
 
-
 1. Onboarding :
    Ask user for their details and their goals.
    height, weight, age, gender, goal (lose weight, gain weight, maintain weight)
@@ -28,4 +27,7 @@ MySql
 4. Set goals:
 5. Get recommendations:
 
+Remaining:
 
+Add profile and settings page.
+Add Rate limit for the api. so that it cannot be abused.

@@ -8,22 +8,29 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { z } from 'zod';
-import { foodEntrySchema } from '@/lib/zod';
+
+const foodEntrySchema = z.object({
+  description: z.string().min(1, 'Please describe what you ate'),
+});
 
 type FoodEntry = {
   id: string;
-  description: string;
-  calories: number;
-  protein: number;
-  timestamp: string;
+  date: string;
+  food: {
+    id: string;
+    description: string;
+    calories: number;
+    protein: number;
+  };
 };
 
 export default function Dashboard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
@@ -35,6 +42,35 @@ export default function Dashboard() {
     },
   });
 
+  const fetchFoodEntries = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/food-entry');
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to fetch food entries');
+      }
+
+      const data = await response.json();
+      console.log('Fetched food entries:', data);
+      setFoodEntries(data);
+    } catch (error) {
+      console.error('Error fetching food entries:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to fetch food entries',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFoodEntries();
+  }, []);
+
   const analyzeFoodWithAI = async (description: string) => {
     const response = await fetch('/api/analyze-food', {
       method: 'POST',
@@ -45,27 +81,47 @@ export default function Dashboard() {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to analyze food');
+      const error = await response.text();
+      throw new Error(error || 'Failed to analyze food');
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('AI analysis result:', data);
+    return data;
   };
 
   const onSubmit = async (values: z.infer<typeof foodEntrySchema>) => {
     try {
       setIsSubmitting(true);
+      console.log('Submitting food entry:', values);
 
+      // First analyze the food with AI
       const nutritionInfo = await analyzeFoodWithAI(values.description);
+      console.log('Nutrition info:', nutritionInfo);
 
-      const newEntry: FoodEntry = {
-        id: crypto.randomUUID(),
-        description: values.description,
-        calories: nutritionInfo.calories,
-        protein: nutritionInfo.protein,
-        timestamp: new Date().toISOString(),
-      };
+      // Then save the food entry
+      const response = await fetch('/api/food-entry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          description: values.description,
+          calories: nutritionInfo.calories,
+          protein: nutritionInfo.protein,
+        }),
+      });
 
-      setFoodEntries((prev) => [...prev, newEntry]);
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to save food entry');
+      }
+
+      const savedEntry = await response.json();
+      console.log('Saved food entry:', savedEntry);
+
+      // Refresh the food entries list
+      await fetchFoodEntries();
 
       form.reset();
       setIsModalOpen(false);
@@ -75,16 +131,22 @@ export default function Dashboard() {
         description: 'Your food entry has been successfully logged.',
       });
     } catch (error) {
-
+      console.error('Error adding food entry:', error);
       toast({
         title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to analyze food entry. Please try again.',
+        description: error instanceof Error ? error.message : 'Failed to add food entry. Please try again.',
         variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const chartData = foodEntries.map((entry) => ({
+    timestamp: entry.date,
+    calories: entry.food.calories,
+    protein: entry.food.protein,
+  }));
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -130,17 +192,23 @@ export default function Dashboard() {
             <CardTitle>Nutrition Overview</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={foodEntries}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="timestamp" tickFormatter={(timestamp) => new Date(timestamp).toLocaleDateString()} />
-                <YAxis />
-                <Tooltip labelFormatter={(timestamp) => new Date(timestamp).toLocaleString()} />
-                <Legend />
-                <Line type="monotone" dataKey="calories" stroke="#8884d8" name="Calories" />
-                <Line type="monotone" dataKey="protein" stroke="#82ca9d" name="Protein (g)" />
-              </LineChart>
-            </ResponsiveContainer>
+            {isLoading ? (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Loading...</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="timestamp" tickFormatter={(timestamp) => new Date(timestamp).toLocaleDateString()} />
+                  <YAxis />
+                  <Tooltip labelFormatter={(timestamp) => new Date(timestamp).toLocaleString()} />
+                  <Legend />
+                  <Line type="monotone" dataKey="calories" stroke="#8884d8" name="Calories" />
+                  <Line type="monotone" dataKey="protein" stroke="#82ca9d" name="Protein (g)" />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
 
@@ -150,23 +218,23 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {foodEntries.length === 0 ? (
+              {isLoading ? (
+                <p className="text-muted-foreground text-center py-4">Loading...</p>
+              ) : foodEntries.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">
                   No food entries yet. Start by adding your first meal!
                 </p>
               ) : (
-                foodEntries
-                  .map((entry) => (
-                    <div key={entry.id} className="p-4 border rounded-lg space-y-2">
-                      <p className="font-medium">{entry.description}</p>
-                      <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>Calories: {entry.calories}</span>
-                        <span>Protein: {entry.protein}g</span>
-                        <span>{new Date(entry.timestamp).toLocaleString()}</span>
-                      </div>
+                foodEntries.map((entry) => (
+                  <div key={entry.id} className="p-4 border rounded-lg space-y-2">
+                    <p className="font-medium">{entry.food.description}</p>
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Calories: {entry.food.calories}</span>
+                      <span>Protein: {entry.food.protein}g</span>
+                      <span>{new Date(entry.date).toLocaleString()}</span>
                     </div>
-                  ))
-                  .reverse()
+                  </div>
+                ))
               )}
             </div>
           </CardContent>

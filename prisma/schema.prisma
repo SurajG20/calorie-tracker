@@ -14,16 +14,18 @@ datasource db {
 }
 
 model User {
-  id            String     @id
-  name          String     @db.Text
+  id            String      @id
+  name          String      @db.Text
   email         String
   emailVerified Boolean
-  image         String?    @db.Text
+  image         String?     @db.Text
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
   userInfo      UserInfo[]
+  foodEntries   FoodEntry[]
+  Food          Food[]
 
   @@unique([email])
   @@map("user")
@@ -87,4 +89,31 @@ model UserInfo {
   updatedAt DateTime
 
   @@map("user_info")
+}
+
+model Food {
+  id          String      @id @default(cuid())
+  description String      @db.Text
+  calories    Int
+  protein     Float
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  FoodEntry   FoodEntry[]
+
+  @@map("food")
+}
+
+model FoodEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  foodId    String
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  food      Food     @relation(fields: [foodId], references: [id], onDelete: Cascade)
+
+  @@map("food_entry")
 }

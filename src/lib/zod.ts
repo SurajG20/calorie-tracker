@@ -50,3 +50,5 @@ export const userInfoSchema = z.object({
 export const foodEntrySchema = z.object({
   description: z.string().min(1, 'Please describe what you ate'),
 });
+
+
